@@ -1,7 +1,9 @@
+//FROM HW3 and HW2
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt-nodejs');
-//TODO: Review https://mongoosejs.com/docs/validation.html
+
+
 
 mongoose.Promise = global.Promise;
 

@@ -3,9 +3,12 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var authJwtController = require('./auth_jwt');
 var User = require('./Users');
-var Movie = require('./Movies');
+var Todo = require('./Todos');
 var jwt = require('jsonwebtoken');
 var cors = require('cors');
+var mongoose = require('mongoose');
+
+
 
 
 var app = express();
@@ -16,71 +19,110 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(passport.initialize());
 
-// hey
 
 var router = express.Router();
 
-router.route('/movies')
+
+//**************** TODOS ROUTING *******************
+
+router.route('/todos')
     .post(authJwtController.isAuthenticated, function (req, res) {
         console.log(req.body);
-        if (!req.body.title || !req.body.releaseDate || !req.body.genre) {
-            res.json({success: false, message: 'Error,  Empty fields.'});
-        }
-        else if(!req.body.actors[0] || !req.body.actors[1]|| !req.body.actors[2]){
 
-            res.json({success: false, message: 'Error,  Less than 3 actors.'});
-
+        //check if received JSON has minimum required fields
+        if (!req.body.name || !req.body.users) {
+            res.json({success: false, message: 'Error,  Empty required fields.'});
         }
         else {
-            var movie = new Movie();
-            movie.title = req.body.title;
-            console.log(movie.title);
-            movie.releaseDate = req.body.releaseDate;
-            console.log(movie.releaseDate)
-            movie.genre = req.body.genre;
-            console.log(movie.genre);
-            movie.actors = req.body.actors;
+
+            //creation of temp schema
+            var todo = new Todo();
+
+            todo.name = req.body.name;
+            todo.users = req.body.users;
 
 
-            // save the movie
-            movie.save(function(err) {
+            //creates a unique object id for task.
+            //NOTE: It is an object. to convert use todo.taskID.toString()
+            todo.taskID = mongoose.Types.ObjectId();
 
-                if (err) {
+            //creating dates
 
-                    console.log('Error Inserting New Data');
-                    if (err.name == 'ValidationError') {
-                        for (field in err.errors) {
-                            console.log(err.errors[field].message);
-                        }
-                    }
-                    // duplicate entry
-                    if (err.code == 11000)
-                        return res.json({ success: false, message: 'A Movie with that title already exists. '});
-                    else
-                        return res.send(err);
+            if(req.body.dateDue){
+                todo.dateDue = new Date(JSON.stringify(req.body.dateDue));
+            }
+
+            todo.dateCreated = new Date();
+
+            //setting priority
+
+            if(req.body.priority){
+
+                //check to see if string is valid
+
+                if(req.body.priority  === "low" || req.body.priority  === "medium" || req.body.priority  === "high"){
+                    todo.priority = req.body.priority;
+                }
+                else{
+
+                    res.json({success: false, message: 'Error,  priority string incorrect.'});
+
                 }
 
-                res.json({ success: true, message: 'Movie created.' });
+            }
+
+            //setting status
+
+            if(req.body.status){
+
+                //check to see if string is valid
+
+                if(req.body.priority  === "low" || req.body.priority  === "medium" || req.body.priority  === "high"){
+                    todo.status = req.body.status;
+                }
+                else{
+
+                    res.json({success: false, message: 'Error,  status string incorrect.'});
+
+                }
+
+            }
+
+            //creating task and saving to database
+
+            Todo.create({ _id: todo.taskID, name: todo.name, dateCreated: todo.dateCreated, dateDue: todo.dateDue, priority: todo.priority, status: todo.status, users: todo.users }, function (err) {
+                if(err){
+                    res.json(err);
+                }
+                else{
+                    res.json({success: true, _id: todo.taskID, name: todo.name, dateCreated: todo.dateCreated, dateDue: todo.dateDue, priority: todo.priority, status: todo.status, users: todo.users });
+                }
             });
+
         }
 
     })
     .put(authJwtController.isAuthenticated, function (req, res) {
         console.log(req.body);
 
-        if (!req.body.title || !req.body.s || !req.body.update) {
+        //sorry about confusing variable names but its being cranky
+        // id is the document id
+        // update is the field to update
+        // replacement is the value to update to document
+
+        if (!req.body.id || !req.body.update || !req.body.replacement) {
             res.json({success: false, message: 'Error,  Empty fields.'});
         }
-        var temp = req.body.s;
-        const filter = { title: req.body.title };
+
+        const filter = { _id: mongoose.Types.ObjectId(req.body.id) };
         console.log(filter);
-        var update = req.body.s;
+        var update = req.body.update;
         var args = {};
-        args[update] = req.body.update;
+        args[update] = req.body.replacement;
         console.log(args);
 
 
-        Movie.findOneAndUpdate(filter, args, function(err, result) {
+        Todo.findOneAndUpdate(filter, args, function(err, result) {
             if (err) {
                 res.send(err);
             }
@@ -93,36 +135,59 @@ router.route('/movies')
     .delete(authJwtController.isAuthenticated, function (req, res) {
         console.log(req.body);
 
-        if (!req.body.title) {
-            res.json({success: false, message: 'Error,  Empty fields.'});
+        //json  must have of todo id
+
+        if (!req.body.id) {
+            res.json({success: false, message: 'Error,  Empty id field.'});
         }
 
 
-        Movie.findOneAndDelete({'title':req.body.title})
+        Todo.findOneAndDelete({'_id':mongoose.Types.ObjectId(req.body.id)})
             .then(deletedDocument => {
                 if(deletedDocument) {
-                    res.json({ success: true, message: 'Movie Deleted.' });
+                    res.json({ success: true, message: 'Todo Deleted.' });
                 }
                 else {
-                    res.json({success: false, message: 'Error,  no matching movie found.'});
+                    res.json({success: false, message: 'Error,  no matching todo found.'});
                 }
             })
-            .catch(err => console.error(`Failed to find and delete movie: ${err}`))
-
-    })
-    .get(authJwtController.isAuthenticated, function (req, res) {
-        console.log(req.body);
-
-        Movie.find(function (err, movie) {
-        if(err){
-            res.send(err);
-        }
-        else{
-            res.json(movie);
-        }
-        })
+            .catch(err => console.error(`Failed to find and delete todo: ${err}`))
 
     });
+
+
+router.route('/todos/:username')
+    .get(authJwtController.isAuthenticated, function (req, res) {
+         var name = req.params.username;
+        //for id we use :userId
+        /*var id = req.params.userId;
+        var userJson;
+
+        User.findById(id, function(err, user) {
+            if (err) res.send(err);
+
+            userJson = JSON.stringify(user);
+        });
+
+        var name =userJson.name;
+*/
+
+        Todo.find( { users: { $elemMatch: { userName :name} }}, function (err, todo) {
+
+            if(err){
+                res.json(err);
+            }
+            else{
+                console.log(todo);
+                res.json(todo);
+            }
+
+        }  );
+
+    });
+
+
+//**************** USERS ROUTING *******************
 
 router.route('/postjwt')
     .post(authJwtController.isAuthenticated, function (req, res) {
@@ -184,6 +249,8 @@ router.post('/signup', function(req, res) {
 router.post('/signin', function(req, res) {
     var userNew = new User();
     //userNew.name = req.body.name;
+    console.log(req.body.username);
+    console.log(req.body.password);
     userNew.username = req.body.username;
     userNew.password = req.body.password;
 
