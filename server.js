@@ -124,10 +124,10 @@ router.route('/todos')
 
         Todo.findOneAndUpdate(filter, args, function(err, result) {
             if (err) {
-                res.send(err);
+                res.json({success: false, message: 'Error,  failed to update todo.'});
             }
             else {
-                res.json({ success: true, message: 'Movie Updated.' });
+                res.json({ success: true, message: 'Todo Updated.' });
             }
         });
 
@@ -175,7 +175,7 @@ router.route('/todos/:username')
         Todo.find( { users: { $elemMatch: { userName :name} }}, function (err, todo) {
 
             if(err){
-                res.json(err);
+                res.json({ success: false, message: 'Todos could not be found. Check id.' });
             }
             else{
                 console.log(todo);

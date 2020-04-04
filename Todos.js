@@ -17,7 +17,8 @@ var TodoSchema = new Schema({
     dateCreated: { type: Date, required: true},
     dateDue: { type: Date},
     priority: { type: String, enum: ['low', 'medium', 'high']},
-    status: { type: String, enum: ['incomplete', 'complete']},
+    //status: { type: String, enum: ['incomplete', 'complete']},
+    status: { type: Boolean},
     users: { type: [{userName: String}], required: true }
 
 });
