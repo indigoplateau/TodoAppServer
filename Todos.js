@@ -5,10 +5,19 @@ var bcrypt = require('bcrypt-nodejs');
 
 
 mongoose.Promise = global.Promise;
-
-mongoose.connect(process.env.DB, { useNewUrlParser: true } );
+mongoose
+    .connect(process.env.DB, {
+        useUnifiedTopology: true,
+        useNewUrlParser: true,
+    })
+    .then(() => console.log('Todos DB Connected!'))
+    .catch(err => {
+        console.log("Todos DB Connection Error" + err.message);
+    });
+//mongoose.connect(process.env.DB, { useNewUrlParser: true } );
 mongoose.set('useCreateIndex', true);
 mongoose.set('useFindAndModify', false);
+
 
 // movie schema
 var TodoSchema = new Schema({
