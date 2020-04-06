@@ -19,7 +19,8 @@ var TodoSchema = new Schema({
     priority: { type: String, enum: ['low', 'medium', 'high']},
     //status: { type: String, enum: ['incomplete', 'complete']},
     status: { type: Boolean},
-    users: { type: [{userName: String}], required: true }
+    users: { type: [{userName: String}], required: true },
+    //Order:{ type: Float, required: true }
 
 });
 
