@@ -8,7 +8,6 @@ var jwt = require('jsonwebtoken');
 var cors = require('cors');
 var mongoose = require('mongoose');
 
-//testing again
 
 var app = express();
 module.exports = app; // for testing
