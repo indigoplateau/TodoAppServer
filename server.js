@@ -44,6 +44,8 @@ router.route('/todos')
             //NOTE: It is an object. to convert use todo.taskID.toString()
             todo.taskID = mongoose.Types.ObjectId();
 
+            //set status is incomplete when a task is created
+            todo.status = false;
             //creating dates
 
             if(req.body.dateDue){
@@ -71,20 +73,20 @@ router.route('/todos')
 
             //setting status
 
-            if(req.body.status){
-
-                //check to see if string is valid
-
-                if(req.body.priority  === "low" || req.body.priority  === "medium" || req.body.priority  === "high"){
-                    todo.status = req.body.status;
-                }
-                else{
-
-                    res.json({success: false, message: 'Error,  status string incorrect.'});
-
-                }
-
-            }
+            // if(req.body.status){
+            //
+            //     //check to see if string is valid
+            //
+            //     if(req.body.priority  === "low" || req.body.priority  === "medium" || req.body.priority  === "high"){
+            //         todo.status = req.body.status;
+            //     }
+            //     else{
+            //
+            //         res.json({success: false, message: 'Error,  status string incorrect.'});
+            //
+            //     }
+            //
+            // }
 
             //creating task and saving to database
 
@@ -102,32 +104,33 @@ router.route('/todos')
     })
     .put(authJwtController.isAuthenticated, function (req, res) {
         console.log(req.body);
-
         //sorry about confusing variable names but its being cranky
         // id is the document id
         // update is the field to update
         // replacement is the value to update to document
+        try {
+            if (!req.body.id || !req.body.update || !req.body.replacement) {
+                res.json({success: false, message: 'Error,  Empty fields.'});
+            }
 
-        if (!req.body.id || !req.body.update || !req.body.replacement) {
-            res.json({success: false, message: 'Error,  Empty fields.'});
+            const filter = {_id: mongoose.Types.ObjectId(req.body.id)};
+            console.log(filter);
+            var update = req.body.update;
+            var args = {};
+            args[update] = req.body.replacement;
+            console.log(args);
+
+
+            Todo.findOneAndUpdate(filter, args, function (err, result) {
+                if (err) {
+                    res.json({success: false, message: 'Error,  failed to update todo.'});
+                } else {
+                    res.json({success: true, message: 'Todo Updated.'});
+                }
+            });
+        }catch (err) {
+            res.status(401).send({success: false, message: 'Failed to update' + err});
         }
-
-        const filter = { _id: mongoose.Types.ObjectId(req.body.id) };
-        console.log(filter);
-        var update = req.body.update;
-        var args = {};
-        args[update] = req.body.replacement;
-        console.log(args);
-
-
-        Todo.findOneAndUpdate(filter, args, function(err, result) {
-            if (err) {
-                res.json({success: false, message: 'Error,  failed to update todo.'});
-            }
-            else {
-                res.json({ success: true, message: 'Todo Updated.' });
-            }
-        });
 
     })
     .delete(authJwtController.isAuthenticated, function (req, res) {
@@ -156,7 +159,7 @@ router.route('/todos')
 
 router.route('/todos/:username')
     .get(authJwtController.isAuthenticated, function (req, res) {
-         var name = req.params.username;
+        var name = req.params.username;
         //for id we use :userId
         /*var id = req.params.userId;
         var userJson;
