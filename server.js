@@ -6,7 +6,7 @@ var User = require('./Users');
 var Todo = require('./Todos');
 var jwt = require('jsonwebtoken');
 var cors = require('cors');
-var mongoose = require('mongoose');
+//var mongoose = require('mongoose');
 
 
 var app = express();
@@ -47,7 +47,7 @@ router.route('/todos')
 
             //creates a unique object id for task.
             //NOTE: It is an object. to convert use todo.taskID.toString()
-            todo.taskID = mongoose.Types.ObjectId();
+            //todo._id = mongoose.Types.ObjectId();
 
             //set status is incomplete when a task is created
             todo.status = false;
@@ -76,6 +76,14 @@ router.route('/todos')
 
             }
 
+            //setting order
+
+            if(req.body.order){
+
+                //check to see if string is valid
+                todo.order = req.body.order;
+            }
+
             //setting status
 
             // if(req.body.status){
@@ -95,13 +103,16 @@ router.route('/todos')
 
             //creating task and saving to database
 
-            Todo.create({ _id: todo.taskID, name: todo.name, dateCreated: todo.dateCreated, dateDue: todo.dateDue, priority: todo.priority, status: todo.status, users: todo.users }, function (err) {
+            todo.save(function (err, doc) {
                 if(err){
-                    res.json(err);
+                    return res.status(500).send(err);
                 }
                 else{
-                    res.json({success: true, _id: todo.taskID, name: todo.name, dateCreated: todo.dateCreated, dateDue: todo.dateDue, priority: todo.priority, status: todo.status, users: todo.users });
+                    var returnDoc = doc.toObject();
+                    returnDoc.success = true;
+                    return res.status(200).json(returnDoc);
                 }
+                
             });
 
         }
@@ -142,19 +153,19 @@ router.route('/todos')
         //json  must have of todo id
 
         if (!req.body._id) {
-            res.status(400).json({success: false, message: 'Error,  Empty id field.'});
+            return res.status(400).json({success: false, message: 'Error,  Empty id field.'});
         }
+        else{
+            Todo.findByIdAndDelete(req.body._id, (err, movie) => {
+                if(!movie) {
+                    return res.status(400).json({success: false, message: 'Failed to delete todo with provided id: No such todo found'})
+                }
 
-
-        Todo.findByIdAndDelete(req.body._id, (err, movie) => {
-            if(!movie) {
-                return res.status(400).json({success: false, message: 'Failed to delete todo with provided id: No such todo found'})
-            }
-
-            if (err)
-                return res.status(500).send(err);
-            return res.status(200).json({success: true, message: 'Todo deleted.'});
-        })
+                if (err)
+                    return res.status(500).send(err);
+                return res.status(200).json({success: true, message: 'Todo deleted.'});
+            })
+        }
 
     })
     .get(authJwtController.isAuthenticated, function (req, res) {

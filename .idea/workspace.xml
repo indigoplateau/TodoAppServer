@@ -9,10 +9,8 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d9ee19f9-cc16-478b-9ef6-92d5d45bbb3c" name="Default" comment="changed status to completed in Todos schema">
+    <list default="true" id="d9ee19f9-cc16-478b-9ef6-92d5d45bbb3c" name="Default" comment="a bunch of stuff">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Todos.js" beforeDir="false" afterPath="$PROJECT_DIR$/Todos.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -127,7 +125,7 @@
       <workItem from="1586201774029" duration="136000" />
       <workItem from="1586201921411" duration="1242000" />
       <workItem from="1586421547320" duration="274000" />
-      <workItem from="1586501419806" duration="587000" />
+      <workItem from="1586501419806" duration="2394000" />
     </task>
     <task id="LOCAL-00001" summary="changes">
       <created>1586038018384</created>
@@ -150,7 +148,14 @@
       <option name="project" value="LOCAL" />
       <updated>1586480898700</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="a bunch of stuff">
+      <created>1586502216700</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1586502216700</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -173,7 +178,8 @@
     <MESSAGE value="changes" />
     <MESSAGE value="get routing retrieves username from JWT token now" />
     <MESSAGE value="changed status to completed in Todos schema" />
-    <option name="LAST_COMMIT_MESSAGE" value="changed status to completed in Todos schema" />
+    <MESSAGE value="a bunch of stuff" />
+    <option name="LAST_COMMIT_MESSAGE" value="a bunch of stuff" />
   </component>
   <component name="WindowStateProjectService">
     <state x="410" y="205" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1585959688347">
