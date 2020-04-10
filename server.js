@@ -154,24 +154,14 @@ router.route('/todos')
             })
             .catch(err => console.error(`Failed to find and delete todo: ${err}`))
 
-    });
-
-
-router.route('/todos/:username')
+    })
     .get(authJwtController.isAuthenticated, function (req, res) {
-        var name = req.params.username;
-        //for id we use :userId
-        /*var id = req.params.userId;
-        var userJson;
 
-        User.findById(id, function(err, user) {
-            if (err) res.send(err);
-
-            userJson = JSON.stringify(user);
-        });
-
-        var name =userJson.name;
-*/
+        const usertoken = req.headers.authorization;
+        const token = usertoken.split(' ');
+        const decoded = jwt.verify(token[1], process.env.SECRET_KEY);
+        console.log(decoded);
+         let name = decoded.username;
 
         Todo.find( { users: { $elemMatch: { userName :name} }}, function (err, todo) {
 
@@ -186,6 +176,7 @@ router.route('/todos/:username')
         }  );
 
     });
+
 
 
 //**************** USERS ROUTING *******************
