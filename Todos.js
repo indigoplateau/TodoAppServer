@@ -18,7 +18,7 @@ mongoose.set('useCreateIndex', true);
 mongoose.set('useFindAndModify', false);
 
 
-// movie schema
+// todos schema
 var TodoSchema = new Schema({
     //taskID: { type: mongoose.Schema.Types.ObjectId, required: true},
     name: { type: String, required: true},

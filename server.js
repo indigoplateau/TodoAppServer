@@ -14,6 +14,11 @@ module.exports = app; // for testing
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 
 app.use(passport.initialize());
 
@@ -29,7 +34,7 @@ router.route('/todos')
 
         //check if received JSON has minimum required fields
         if (!req.body.name || !req.body.users) {
-            res.json({success: false, message: 'Error,  Empty required fields.'});
+            res.status(400).json({success: false, message: 'Error,  Empty required fields.'});
         }
         else {
 
@@ -65,7 +70,7 @@ router.route('/todos')
                 }
                 else{
 
-                    res.json({success: false, message: 'Error,  priority string incorrect.'});
+                    res.status(400).json({success: false, message: 'Error,  priority string incorrect.'});
 
                 }
 
@@ -104,55 +109,52 @@ router.route('/todos')
     })
     .put(authJwtController.isAuthenticated, function (req, res) {
         console.log(req.body);
-        //sorry about confusing variable names but its being cranky
-        // id is the document id
-        // update is the field to update
-        // replacement is the value to update to document
-        try {
-            if (!req.body.id || !req.body.update || !req.body.replacement) {
-                res.json({success: false, message: 'Error,  Empty fields.'});
-            }
 
-            const filter = {_id: mongoose.Types.ObjectId(req.body.id)};
-            console.log(filter);
-            var update = req.body.update;
-            var args = {};
-            args[update] = req.body.replacement;
-            console.log(args);
+        //TODO: added the below - Cameron
+        Todo.findByIdAndUpdate(
+            // the id of the item to find
+            req.body._id,
 
+            // the change to be made. Mongoose will smartly combine your existing
+            // document with this change, which allows for partial updates too
+            req.body,
 
-            Todo.findOneAndUpdate(filter, args, function (err, result) {
-                if (err) {
-                    res.json({success: false, message: 'Error,  failed to update todo.'});
-                } else {
-                    res.json({success: true, message: 'Todo Updated.'});
+            // an option that asks mongoose to return the updated version
+            // of the document instead of the pre-updated one.
+            {new: true},
+
+            // the callback function
+            (err, movie) => {
+                if(!movie) {
+                    return res.status(400).json({ success: false, message: 'Failed to update movie with provided id: No such movie found'});
                 }
-            });
-        }catch (err) {
-            res.status(401).send({success: false, message: 'Failed to update' + err});
-        }
 
+                // Handle any possible database errors
+                if (err)
+                    return res.status(500).send(err);
+                return res.status(200).json({success: true, message: 'Movie updated!'});
+            })
+        //TODO: added the above - Cameron
     })
     .delete(authJwtController.isAuthenticated, function (req, res) {
         console.log(req.body);
 
         //json  must have of todo id
 
-        if (!req.body.id) {
-            res.json({success: false, message: 'Error,  Empty id field.'});
+        if (!req.body._id) {
+            res.status(400).json({success: false, message: 'Error,  Empty id field.'});
         }
 
 
-        Todo.findOneAndDelete({'_id':mongoose.Types.ObjectId(req.body.id)})
-            .then(deletedDocument => {
-                if(deletedDocument) {
-                    res.json({ success: true, message: 'Todo Deleted.' });
-                }
-                else {
-                    res.json({success: false, message: 'Error,  no matching todo found.'});
-                }
-            })
-            .catch(err => console.error(`Failed to find and delete todo: ${err}`))
+        Todo.findByIdAndDelete(req.body._id, (err, movie) => {
+            if(!movie) {
+                return res.status(400).json({success: false, message: 'Failed to delete todo with provided id: No such todo found'})
+            }
+
+            if (err)
+                return res.status(500).send(err);
+            return res.status(200).json({success: true, message: 'Todo deleted.'});
+        })
 
     })
     .get(authJwtController.isAuthenticated, function (req, res) {
@@ -166,7 +168,7 @@ router.route('/todos')
         Todo.find( { users: { $elemMatch: { userName :name} }}, function (err, todo) {
 
             if(err){
-                res.json({ success: false, message: 'Todos could not be found. Check id.' });
+                res.status(401).json({ success: false, message: 'Todos could not be found. Check id.' });
             }
             else{
                 console.log(todo);
@@ -199,7 +201,7 @@ router.route('/users/:userId')
         User.findById(id, function(err, user) {
             if (err) res.send(err);
 
-            var userJson = JSON.stringify(user);
+            //var userJson = JSON.stringify(user);
             // return that user
             res.json(user);
         });
@@ -216,7 +218,7 @@ router.route('/users')
 
 router.post('/signup', function(req, res) {
     if (!req.body.username || !req.body.password) {
-        res.json({success: false, message: 'Please pass username and password.'});
+        res.status(400).json({success: false, message: 'Please pass username and password.'});
     }
     else {
         var user = new User();
@@ -227,10 +229,10 @@ router.post('/signup', function(req, res) {
         user.save(function(err) {
             if (err) {
                 // duplicate entry
-                if (err.code == 11000)
-                    return res.json({ success: false, message: 'A user with that username already exists. '});
+                if (err.code === 11000)
+                    return res.status(401).json({ success: false, message: 'A user with that username already exists. '});
                 else
-                    return res.send(err);
+                    return res.status(401).send(err);
             }
 
             res.json({ success: true, message: 'User created!' });

@@ -1,12 +1,12 @@
 {
-  "name": "week7a",
+  "name": "TodoAppProxyServer",
   "version": "1.0.0",
-  "description": "week7a",
+  "description": "a proxy server to handle routing for our Todo App",
   "main": "server.js",
   "scripts": {
     "preinstall": "npx npm-force-resolutions"
   },
-  "author": "Shawn McCarthy",
+  "author": "Group 1 based on code by Shawn McCarthy",
   "license": "ISC",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
