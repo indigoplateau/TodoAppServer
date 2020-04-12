@@ -171,8 +171,9 @@ router.route('/todos')
             return res.status(400).json({success: false, message: 'Error,  Empty id field.'});
         }
         else{
-            Todo.findByIdAndDelete(req.body._id, (err, movie) => {
-                if(!movie) {
+
+            Todo.findByIdAndDelete(req.body._id, (err, todo) => {
+                if(!todo) {
                     return res.status(400).json({success: false, message: 'Failed to delete todo with provided id: No such todo found'})
                 }
 

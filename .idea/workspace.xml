@@ -9,7 +9,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d9ee19f9-cc16-478b-9ef6-92d5d45bbb3c" name="Default" comment="code smells">
+    <list default="true" id="d9ee19f9-cc16-478b-9ef6-92d5d45bbb3c" name="Default" comment="post token comparison fixed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
     </list>
@@ -114,7 +114,7 @@
       <workItem from="1586421547320" duration="274000" />
       <workItem from="1586501419806" duration="2710000" />
       <workItem from="1586540960020" duration="506000" />
-      <workItem from="1586711153139" duration="1894000" />
+      <workItem from="1586711153139" duration="2391000" />
     </task>
     <task id="LOCAL-00001" summary="changes">
       <created>1586038018384</created>
@@ -151,7 +151,14 @@
       <option name="project" value="LOCAL" />
       <updated>1586504675311</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="post token comparison fixed">
+      <created>1586734988190</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1586734988190</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -176,16 +183,18 @@
     <MESSAGE value="changed status to completed in Todos schema" />
     <MESSAGE value="a bunch of stuff" />
     <MESSAGE value="code smells" />
-    <option name="LAST_COMMIT_MESSAGE" value="code smells" />
+    <MESSAGE value="post token comparison fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="post token comparison fixed" />
   </component>
   <component name="WindowStateProjectService">
     <state x="410" y="205" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1585959688347">
       <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="410" y="205" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.23.1440.832@0.23.1440.832" timestamp="1585959688347" />
-    <state x="269" y="56" key="CommitChangelistDialog2" timestamp="1586038018186">
-      <screen x="0" y="23" width="1440" height="832" />
+    <state x="269" y="36" key="CommitChangelistDialog2" timestamp="1586734987971">
+      <screen x="0" y="0" width="1440" height="900" />
     </state>
+    <state x="269" y="36" key="CommitChangelistDialog2/0.0.1440.900@0.0.1440.900" timestamp="1586734987971" />
     <state x="269" y="56" key="CommitChangelistDialog2/0.23.1440.832@0.23.1440.832" timestamp="1586038018186" />
     <state width="1419" height="295" key="GridCell.Tab.0.bottom" timestamp="1586734924400">
       <screen x="0" y="0" width="1440" height="900" />
