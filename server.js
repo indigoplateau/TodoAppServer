@@ -32,9 +32,28 @@ router.route('/todos')
     .post(authJwtController.isAuthenticated, function (req, res) {
         console.log(req.body);
 
+        const usertoken = req.headers.authorization;
+        const token = usertoken.split(' ');
+        const decoded = jwt.verify(token[1], process.env.SECRET_KEY);
+        console.log(decoded);
+
+        let requestName = decoded.username;
+        let matchesToken = false;
+
+
+        for (i = 0; i < req.body.users.length; i++) {
+            if(requestName === req.body.users[i].userName){
+                matchesToken = true;
+                console.log(matchesToken);
+            }
+        }
+
         //check if received JSON has minimum required fields
-        if (!req.body.name || !req.body.users) {
-            res.status(400).json({success: false, message: 'Error,  Empty required fields.'});
+        if(!matchesToken){
+            return res.status(401).json({success: false, message: 'User fields empty or doesnt match token, not Authorized .'});
+        }
+        else if (!req.body.name || !req.body.users) {
+            return res.status(400).json({success: false, message: 'Error,  Empty required fields.'});
         }
         else {
 
@@ -44,13 +63,9 @@ router.route('/todos')
             todo.name = req.body.name;
             todo.users = req.body.users;
 
-
-            //creates a unique object id for task.
-            //NOTE: It is an object. to convert use todo.taskID.toString()
-            //todo._id = mongoose.Types.ObjectId();
-
             //set status is incomplete when a task is created
             todo.status = false;
+
             //creating dates
 
             if(req.body.dateDue){
@@ -174,7 +189,9 @@ router.route('/todos')
         const token = usertoken.split(' ');
         const decoded = jwt.verify(token[1], process.env.SECRET_KEY);
         console.log(decoded);
-         let name = decoded.username;
+
+        let name = decoded.username;
+
 
         Todo.find( { users: { $elemMatch: { userName :name} }}, function (err, todo) {
 
