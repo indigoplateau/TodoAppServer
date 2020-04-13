@@ -26,6 +26,7 @@ app.use(passport.initialize());
 var router = express.Router();
 
 
+
 //**************** TODOS ROUTING *******************
 
 router.route('/todos')
@@ -64,12 +65,31 @@ router.route('/todos')
             todo.users = req.body.users;
 
             //set status is incomplete when a task is created
-            todo.status = false;
+            todo.completed = false;
 
             //creating dates
 
             if(req.body.dateDue){
                 todo.dateDue = new Date(JSON.stringify(req.body.dateDue));
+            }
+
+            //priority = medium if user do not enter
+            if (req.body.priority==='low'){
+                todo.priority= req.body.priority;
+                todo.priorityNum = 1;
+            }
+            else if (req.body.priority==='medium'){
+                todo.priority=req.body.priority;
+                todo.priorityNum = 2;
+            }
+            else if (req.body.priority==='high'){
+                todo.priority= req.body.priority;
+                todo.priorityNum = 3;
+            }
+            else
+            {
+                todo.priorityNum=2;
+                todo.priority='medium';
             }
 
             todo.dateCreated = new Date();
@@ -192,7 +212,7 @@ router.route('/todos')
         console.log(decoded);
 
         let name = decoded.username;
-
+        let sortPriority = req.query.sortPriority;
 
         Todo.find( { users: { $elemMatch: { userName :name} }}, function (err, todo) {
 
@@ -200,11 +220,26 @@ router.route('/todos')
                 res.status(401).json({ success: false, message: 'Todos could not be found. Check id.' });
             }
             else{
-                console.log(todo);
-                res.json(todo);
+                //If sortPriority = true; sorts json by priority
+                if(sortPriority && sortPriority.toLowerCase()==='true')
+                {
+                    //req.json(byName);
+                    let todo1=todo;
+                    todo1.sort(function(a, b) {
+                        return parseFloat(b.priorityNum) - parseFloat(a.priorityNum);
+                    });
+                    console.log(todo1);
+                    res.json(todo1);
+                    console.log("Successfully Sorted by priority")
+                }
+                else
+                {
+                    console.log(todo);
+                    res.json(todo);
+                }
             }
 
-        }  );
+        });
 
     });
 
