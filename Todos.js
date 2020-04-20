@@ -28,8 +28,8 @@ var TodoSchema = new Schema({
     //status: { type: String, enum: ['incomplete', 'complete']},
     completed: { type: Boolean},
     users: { type: [{userId:mongoose.Schema.Types.ObjectId, userName: String}], required: true },
-    Order:{ type: Number}
-
+    order:{ type: Number}
+    //changed 'Order' to 'order' [Jacob 4/19]
 });
 
 // return the model
