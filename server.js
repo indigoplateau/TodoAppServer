@@ -177,8 +177,10 @@ router.route('/todos')
                     return res.status(400).json({success: false, message: 'Failed to delete todo with provided id: No such todo found'})
                 }
 
-                if (err)
+                if (err){
                     return res.status(500).send(err);
+                }
+
                 return res.status(200).json({success: true, message: 'Todo deleted.'});
             })
         }
