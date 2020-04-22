@@ -26,6 +26,8 @@ app.use(passport.initialize());
 var router = express.Router();
 
 
+//************** Header Functions *******************
+
 function checkingJwt (req) {
         const usertoken = req.headers.authorization;
         if (usertoken) {
@@ -42,15 +44,14 @@ function checkingJwt (req) {
                  return 0;     //return 0 if headers.authorization doesn't have anything
              }
 }
+
 //**************** TODOS ROUTING *******************
 
 router.route('/todos')
     .post(authJwtController.isAuthenticated, function (req, res) {
         console.log(req.body);
 
-        const usertoken = req.headers.authorization;
-        const token = usertoken.split(' ');
-        const decoded = jwt.verify(token[1], process.env.SECRET_KEY);
+        let decoded = checkingJwt(req);
         console.log(decoded);
 
         let requestName = decoded.username;
@@ -115,22 +116,6 @@ router.route('/todos')
                 todo.order = req.body.order;
             }
 
-            //setting status
-
-            // if(req.body.status){
-            //
-            //     //check to see if string is valid
-            //
-            //     if(req.body.priority  === "low" || req.body.priority  === "medium" || req.body.priority  === "high"){
-            //         todo.status = req.body.status;
-            //     }
-            //     else{
-            //
-            //         res.json({success: false, message: 'Error,  status string incorrect.'});
-            //
-            //     }
-            //
-            // }
 
             //creating task and saving to database
 
@@ -302,7 +287,7 @@ router.post('/signin', function(req, res) {
                 if (isMatch) {
                     var userToken = {id: user._id, username: user.username};
                     var token = jwt.sign(userToken, process.env.SECRET_KEY);
-                    res.json({success: true, token: 'JWT ' + token,hey: result});
+                    res.json({success: true, token: 'JWT ' + token});
                 }
                 else {
                     res.status(401).send({success: false, message: 'Authentication failed.'});
