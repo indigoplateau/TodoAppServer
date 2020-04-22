@@ -8,7 +8,6 @@ var jwt = require('jsonwebtoken');
 var cors = require('cors');
 var mongoose = require('mongoose');
 
-//testing again
 
 var app = express();
 module.exports = app; // for testing
@@ -22,6 +21,22 @@ app.use(passport.initialize());
 var router = express.Router();
 
 
+function checkingJwt (req) {
+        const usertoken = req.headers.authorization;
+        if (usertoken) {
+            const token = usertoken.split(' ')[1];
+            try {
+                const decoded = jwt.verify(token, process.env.SECRET_KEY);
+                return decoded;
+
+            } catch (err) {
+                throw new Error(err);
+            }
+
+         } else {
+                 return 0;     //return 0 if headers.authorization doesn't have anything
+             }
+}
 //**************** TODOS ROUTING *******************
 
 router.route('/todos')
@@ -103,7 +118,6 @@ router.route('/todos')
     })
     .put(authJwtController.isAuthenticated, function (req, res) {
         console.log(req.body);
-
         //sorry about confusing variable names but its being cranky
         // id is the document id
         // update is the field to update
@@ -252,7 +266,6 @@ router.post('/signin', function(req, res) {
     console.log(req.body.password);
     userNew.username = req.body.username;
     userNew.password = req.body.password;
-
     User.findOne({ username: userNew.username }).select('name username password').exec(function(err, user) {
         if (err) res.send(err);
 
@@ -261,7 +274,7 @@ router.post('/signin', function(req, res) {
                 if (isMatch) {
                     var userToken = {id: user._id, username: user.username};
                     var token = jwt.sign(userToken, process.env.SECRET_KEY);
-                    res.json({success: true, token: 'JWT ' + token});
+                    res.json({success: true, token: 'JWT ' + token,hey: result});
                 }
                 else {
                     res.status(401).send({success: false, message: 'Authentication failed.'});
