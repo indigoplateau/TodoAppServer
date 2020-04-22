@@ -1,7 +1,6 @@
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var bcrypt = require('bcrypt-nodejs');
 
 
 mongoose.Promise = global.Promise;
@@ -19,7 +18,7 @@ mongoose.set('useCreateIndex', true);
 mongoose.set('useFindAndModify', false);
 
 
-// movie schema
+// todos schema
 var TodoSchema = new Schema({
     //taskID: { type: mongoose.Schema.Types.ObjectId, required: true},
     name: { type: String, required: true},
@@ -27,9 +26,9 @@ var TodoSchema = new Schema({
     dateDue: { type: Date},
     priority: { type: String, enum: ['low', 'medium', 'high']},
     //status: { type: String, enum: ['incomplete', 'complete']},
-    status: { type: Boolean},
+    completed: { type: Boolean},
     users: { type: [{userId:mongoose.Schema.Types.ObjectId, userName: String}], required: true },
-    Order:{ type: Number}
+    order:{ type: Number}
 
 });
 
