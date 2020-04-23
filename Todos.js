@@ -20,16 +20,15 @@ mongoose.set('useFindAndModify', false);
 
 // todos schema
 var TodoSchema = new Schema({
-    //taskID: { type: mongoose.Schema.Types.ObjectId, required: true},
+
     name: { type: String, required: true},
     dateCreated: { type: Date, required: true},
     dateDue: { type: Date},
     priority: { type: String, enum: ['low', 'medium', 'high']},
-    //status: { type: String, enum: ['incomplete', 'complete']},
     completed: { type: Boolean},
-    users: { type: [{userId:mongoose.Schema.Types.ObjectId, userName: String}], required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, required: true }, //users changed to user, only has ObjectId as attribute -Jake
     order:{ type: Number}
-    //changed 'Order' to 'order' [Jacob 4/19]
+
 });
 
 // return the model
