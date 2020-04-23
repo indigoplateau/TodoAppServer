@@ -29,7 +29,7 @@ var TodoSchema = new Schema({
     completed: { type: Boolean},
     users: { type: [{userId:mongoose.Schema.Types.ObjectId, userName: String}], required: true },
     order:{ type: Number}
-
+    //changed 'Order' to 'order' [Jacob 4/19]
 });
 
 // return the model
