@@ -6,7 +6,6 @@ var User = require('./Users');
 var Todo = require('./Todos');
 var jwt = require('jsonwebtoken');
 var cors = require('cors');
-//var mongoose = require('mongoose');
 
 
 var app = express();
@@ -53,23 +52,10 @@ router.route('/todos')
 
         let decoded = checkingJwt(req);
         console.log(decoded);
-
-        let requestName = decoded.username;
-        let matchesToken = false;
-
-
-        for (i = 0; i < req.body.users.length; i++) {
-            if(requestName === req.body.users[i].userName){
-                matchesToken = true;
-                console.log(matchesToken);
-            }
-        }
+        //gets user's userid from decoded Jwt token.
 
         //check if received JSON has minimum required fields
-        if(!matchesToken){
-            return res.status(401).json({success: false, message: 'User fields empty or doesnt match token, not Authorized .'});
-        }
-        else if (!req.body.name || !req.body.users) {
+        if (!req.body.name) { //only required filed is name of Task now. Date is generated automatically.
             return res.status(400).json({success: false, message: 'Error,  Empty required fields.'});
         }
         else {
@@ -78,7 +64,7 @@ router.route('/todos')
             var todo = new Todo();
 
             todo.name = req.body.name;
-            todo.users = req.body.users;
+            todo.user = decoded.id; //task's user is set to decoded jwt id.
 
             //set status is incomplete when a task is created
             todo.status = false;
@@ -151,22 +137,22 @@ router.route('/todos')
             {new: true},
 
             // the callback function
-            (err, movie) => {
-                if(!movie) {
-                    return res.status(400).json({ success: false, message: 'Failed to update movie with provided id: No such movie found'});
+            (err, todo) => {
+                if(!todo) {
+                    return res.status(400).json({ success: false, message: 'Failed to update todo with provided id: No such todo found'});
                 }
 
                 // Handle any possible database errors
                 if (err)
                     return res.status(500).send(err);
-                return res.status(200).json({success: true, message: 'Movie updated!'});
+                return res.status(200).json({success: true, message: 'Todo updated!'});
             })
         //TODO: added the above - Cameron
     })
     .delete(authJwtController.isAuthenticated, function (req, res) {
         console.log(req.body);
 
-        //json  must have of todo id
+        //json  must have todo id
 
         if (!req.body._id) {
             return res.status(400).json({success: false, message: 'Error,  Empty id field.'});
@@ -189,15 +175,11 @@ router.route('/todos')
     })
     .get(authJwtController.isAuthenticated, function (req, res) {
 
-        const usertoken = req.headers.authorization;
-        const token = usertoken.split(' ');
-        const decoded = jwt.verify(token[1], process.env.SECRET_KEY);
+        let decoded = checkingJwt(req);
         console.log(decoded);
+        //use decoded jwt to get user id
 
-        let name = decoded.username;
-
-
-        Todo.find( { users: { $elemMatch: { userName :name} }}, function (err, todo) {
+        Todo.find( {user: decoded.id}, function (err, todo) { //changed filtering with user. Now finds task by user's id, decoded by function
 
             if(err){
                 res.status(401).json({ success: false, message: 'Todos could not be found. Check id.' });
@@ -233,8 +215,8 @@ router.route('/users/:userId')
         User.findById(id, function(err, user) {
             if (err) res.send(err);
 
-            //var userJson = JSON.stringify(user);
-            // return that user
+
+            // returns that user
             res.json(user);
         });
     });
@@ -260,23 +242,24 @@ router.post('/signup', function(req, res) {
         // save the user
         user.save(function(err) {
             if (err) {
-                // duplicate entry
-                if (err.code === 11000)
+
+                if (err.code === 11000) //duplicate entry error. User must be unique
                     return res.status(401).json({ success: false, message: 'A user with that username already exists. '});
                 else
                     return res.status(401).send(err);
             }
 
-            res.json({ success: true, message: 'User created!' });
+            res.json({ success: true, message: 'User created!' }); //user signup successful
         });
     }
 });
 
 router.post('/signin', function(req, res) {
     var userNew = new User();
-    //userNew.name = req.body.name;
+
     console.log(req.body.username);
     console.log(req.body.password);
+
     userNew.username = req.body.username;
     userNew.password = req.body.password;
     User.findOne({ username: userNew.username }).select('name username password').exec(function(err, user) {
