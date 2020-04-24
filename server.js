@@ -83,7 +83,7 @@ router.route('/todos')
 
                 //check to see if string is valid
 
-                if(req.body.priority  === "low" || req.body.priority  === "medium" || req.body.priority  === "high"){
+                if(req.body.priority  === "Low" || req.body.priority  === "Med" || req.body.priority  === "High"){
                     todo.priority = req.body.priority;
                 }
                 else{

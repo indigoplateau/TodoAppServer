@@ -24,7 +24,7 @@ var TodoSchema = new Schema({
     name: { type: String, required: true},
     dateCreated: { type: Date, required: true},
     dateDue: { type: Date},
-    priority: { type: String, enum: ['low', 'medium', 'high']},
+    priority: { type: String, enum: ['Low', 'Med', 'High']},
     completed: { type: Boolean},
     user: { type: mongoose.Schema.Types.ObjectId, required: true }, //users changed to user, only has ObjectId as attribute -Jake
     order:{ type: Number}
